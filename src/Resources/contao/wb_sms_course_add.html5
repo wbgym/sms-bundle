@@ -1,0 +1,11 @@
+<section class='<?= $this->class ?> block'>
+  <h2>SmS Kurs Anmelden</h2>
+<?php if ($this->show): ?>
+  <h2 class=''></h2>
+  <form action="" method="POST">
+    <input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}" />
+
+  </form>
+<?php else: ?>
+<?php endif; ?>
+</section>

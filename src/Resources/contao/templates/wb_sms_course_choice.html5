@@ -1,0 +1,231 @@
+<script src="bundles/wbgymsms/jquery.countdown.min.js"></script>
+<script>
+	//AJAX Setup
+	$.ajaxSetup({
+		type: 'GET'
+	});
+
+	function ajax(sTask, oData, fSuccess) {
+		if (typeof(oData) == 'function') {
+			fSuccess = oData;
+			oData = {}
+		}
+		$.ajax({
+			url: 'ajax.php?task=' + sTask,
+			data: oData,
+			success: fSuccess
+		});
+	}
+</script>
+<script>
+	//sticky (div which sticks at the top of the screen) for e.g. sms-choice module
+	$(window).scroll(sticky_relocate);
+	$(function() {
+		sticky_relocate();
+	});
+
+function sticky_relocate() {
+	var window_top = $(window).scrollTop();
+	var anchor = $('.info-anchor').offset().top;
+		if (window_top > anchor) {
+			$('.sticky').find('.info').addClass('stick');
+		} else {
+			$('.sticky').find('.info').removeClass('stick');
+		}
+}
+
+</script>
+
+<section class="<?php echo $this->class; ?> block"<?php echo $this->cssID; ?><?php if ($this->style): ?> style="<?php echo $this->style; ?>"<?php endif; ?>>
+    <?php if ($this->headline): ?>
+        <<?php echo $this->hl; ?>><?php echo $this->headline; ?></<?php echo $this->hl; ?>>
+    <?php endif; ?>
+
+    <?php if (is_array($this->finalWish)) { ?>
+        <div class="sticky">
+			<div class="info-anchor"></div>
+			<div class="info">
+				<b>Du bist bereits für den Kurs "<?php echo $this->finalWish['name']; ?>" eingetragen. Sollte dies falsch sein, wende dich bitte an das <a href="{{link_url::56}}">Webteam</a> (<a href="mailto:webteam@wbgym.de">webteam@wbgym.de</a>).</b>
+			</div>
+		</div>
+    <?php } ?>
+	 <?php if (is_array($this->arrOwnCourse)) { ?>
+     <div class="sticky">
+		<div class="info-anchor"></div>
+		<div class="info">
+            <b>Du bist als Kursleiter des Kurses "<?php echo $this->arrOwnCourse['name']; ?>" eingetragen. Sollte dies falsch sein, wende dich bitte an das <a href="mailto:webteam@wbgym.de">Webteam</a> (<a href="mailto:webteam@wbgym.de">webteam@wbgym.de</a>).</b>
+        </div>
+	</div>
+    <?php } ?>
+	<?php if (!FE_USER_LOGGED_IN) : ?>
+	    <div class="sticky">
+			<div class="info-anchor"></div>
+			<div class="info">
+				<b><a class="show-login" style="cursor:pointer;">Du musst dich einloggen</a>, um Kurse zu wählen. Wenn du dein Passwort vergessen hast, wende dich bitte an <a href="mailto:e.bicher@wbgym.de">Herrn Bicher</a>.</b>
+			</div>
+		</div>
+	<?php endif; ?>
+
+    <?php if ($this->vote) { ?>
+	<div class="sticky">
+		<div class="info-anchor"></div>
+		<div class="info">
+			<div id="countdown">Wahl läuft noch <span class="time">{{cntdwn_days::2018-06-25 18:00}}</span></div>
+
+			<form action="" method="POST">
+				<input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}" />
+				<?php for ($i = 0; $i < $this->intMaxWishes; $i++) { ?>
+					<div class="row">
+						<div class="cell"><b><span class="my_label"><?php echo $GLOBALS['TL_LANG']['SMS']['Chosen'] ?> </span><?php echo $GLOBALS['TL_LANG']['SMS']['choice' . $i] ?>:</b></div>
+						<div class="cell"><span id="chosenWish<?php echo $i; ?>">---</span></div>
+						<input type="hidden" value="" id="wishForm<?= $i ?>" name="<?= $i ?>" />
+					</div>
+				<?php } ?>
+				<div class="save_box row">
+					<div class="cell"><button type="submit">Speichern</button></div>
+					<div id="save_info" class="cell">
+						<?php if ($_SERVER['REQUEST_METHOD'] == 'POST') : ?>
+							<?php if($this->saveSuccess) : ?><span class="green">Speichern erfolgreich.</span>
+							<?php else : ?><span class="red">Speichern nicht erfolgreich.</span><?php endif; ?>
+						<?php endif; ?>
+					</div>
+				</div>
+			</form>
+        </div>
+	</div>
+	<?php
+    }
+    ?>
+
+    <ul class="course-list">
+        <?php
+        $courseCount = count($this->arrCourses);
+        for ($j = 0; $j < $courseCount; $j++) {
+            $course = $this->arrCourses[$j];
+            $isOwnCourse = $course['id'] == $this->ownCourseId;
+            $class = $isOwnCourse ? 'ownCourse' : null;
+            ?>
+            <li id="course-<?php echo $course['id'] ?>" class="<?php echo $class; ?> <?php if (!$course['electable']) {echo "unelectable";} else{echo "electable";}; ?>">
+                <div class="course-details">
+                    <h3><?php echo $course['name']; ?></h3>
+                    <p class="course-description">
+						<?php echo $course['description']; ?>
+					</p>
+
+					<?php if (strlen($course['specials'])) : ?>
+						<p class="course-specials"><?php echo $course['specials']; ?></p>
+					<?php endif; ?>
+					<?php if ($course['closed'] == 1) : ?>
+						<p class="course-specials">Geschlossener Kurs</p>
+					<?php endif; ?>
+					<table>
+					<?php if (strlen($course['leader'])) : ?>
+						<tr>
+							<td><?php echo $GLOBALS['TL_LANG']['SMS']['leaders']; ?></td>
+							<td><?php echo $course['leader']; ?><?php if (strlen($course['coLeader'])) : ?>, <?php echo $course['coLeader']; endif; ?></td>
+						</tr>
+					<?php endif; ?>
+
+					<?php if (strlen($course['teacher'])) : ?>
+						<tr>
+							<td><?php echo $GLOBALS['TL_LANG']['SMS']['teacher']; ?></td>
+							<td><?php echo $course['teacher']; ?></td>
+						</tr>
+					<?php endif; ?>
+
+						<tr>
+							<td><?php echo $GLOBALS['TL_LANG']['wbgym']['grades']; ?></td>
+							<td><?php echo $course['formLimit']; ?></td>
+						</tr>
+						<tr>
+							<td><?php echo $GLOBALS['TL_LANG']['SMS']['places']; ?></td>
+							<td><?php echo $course['maxStudents']; ?>&nbsp;<?php echo $GLOBALS['TL_LANG']['SMS']['places_all']; ?></td>
+						</tr>
+					</table>
+                </div>
+                <div class="choices">
+					<?php if ($course['closed'] != 1) : ?>
+						<?php for ($i = 0; $i < $this->intMaxWishes; $i++) { ?>
+                            <button class="wish<?php echo $i; ?>" <?php if (!$course['electable'] || !FE_USER_LOGGED_IN) : ?> disabled<?php endif; ?>>
+								<?php echo $GLOBALS['TL_LANG']['SMS']['choice' . $i]; ?>
+								(<span id="lw-<?php echo $course['id']; ?>-<?php echo $i; ?>"><?php echo $course['wishes'][$i]; ?></span>)
+							 </button>
+                            <?php if ($i < $this->intMaxWishes - 1) : ?><br/><?php endif; ?>
+						<?php } ?>
+
+					<?php else : ?>
+						<p>Geschlossener Kurs - nicht wählbar</p>
+					<?php endif; ?>
+                </div>
+            </li>
+		<?php } ?>
+    </ul>
+    <script type="text/javascript">
+        (function($) {
+
+         	//userWishesView == wish state which is currently shown on the page
+         	var userWishesView = [-1,-1,-1];
+
+         	//userWishesOld == wishes that are already saved in the db
+            var userWishesOld = [<?php echo implode(',', $this->arrUserWishes); ?>]
+
+            //userWishesNew == wish changes that are made before saving
+            var userWishesNew = userWishesOld.slice();
+
+            //set buttons and overview to already saved choices
+            console.log(userWishesOld);
+            console.log(userWishesView);
+            setUserWishes(userWishesOld, true);
+
+            $('.choices button').click(function() {
+                var button = $(this);
+                var courseId = button.hasClass('chosen') ? -1 : button.parent().parent().prop('id').substring(7);
+                var wish = button.prop('class').split(' ')[0].substring(4);
+
+                //unwish other courses with the same wishnum
+                for (var i = 0; i < userWishesOld.length; i++) {
+                	if(i != wish && userWishesNew[i] == courseId) {
+                		userWishesNew[i] = -1;
+                	}
+                }
+
+                userWishesNew[wish] = courseId;
+                setUserWishes(userWishesNew);
+            });
+
+            function setUserWishes(newWishes, isInitialize) {
+                for (var i = 0; i < userWishesView.length; i++) {
+                    var e;
+                    if (newWishes[i] == -1 || userWishesView[i] > 0) {
+                        jQuery('#course-'+userWishesView[i]+" .wish"+i).removeClass('chosen');
+                        if (!isInitialize) {
+                            e = $('#lw-'+userWishesView[i]+'-'+i);
+                            e.text(parseInt(e.text(), 10)-1);
+                        }
+						$('#chosenWish'+i).text('---');
+						$('#wishForm'+i).val(-1);
+						userWishesView[i] = newWishes[i];
+                    }
+                    if (newWishes[i] > 0) {
+                        jQuery('#course-'+newWishes[i]+" .wish"+i).addClass('chosen');
+                        if (!isInitialize) {
+                            e = $('#lw-'+newWishes[i]+'-'+i);
+                            e.text(parseInt(e.text(), 10)+1);
+                        }
+						$('#chosenWish'+i).text($('#course-'+newWishes[i]+' h3').text());
+						$('#wishForm'+i).val(newWishes[i]);
+						userWishesView[i] = newWishes[i];
+                    }
+                }
+                if(!isInitialize) {
+	                if(userWishesOld.toString() != newWishes.toString()) {
+	                	$('#save_info').html('<span class="red">Ungespeicherte Änderungen vorhanden!</span>');
+	                }
+	             	else {
+	             		$('#save_info').empty();
+	             	}
+	            }
+            }
+        })(jQuery);
+    </script>
+</section>

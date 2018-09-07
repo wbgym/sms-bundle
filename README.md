@@ -1,4 +1,3 @@
-# WBGym SmS-Bundle
-Contao Bundle for "Schüler machen Schule" (SmS) project week at Weinberg-Gymnasium Kleinmachnow
+# SmS Bundle
 
 Provides methods for organizing and administrating the SmS-Week at wbgym.

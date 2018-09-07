@@ -1,0 +1,49 @@
+#tl_navigation .tl_level_1_group .group-sms {
+  background: url("sms.svg") 3px 2px no-repeat;
+}
+
+@media screen and (max-width:959px) {
+  #SMSCourseAdd textarea {
+    width: 100%;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.error {
+  color: #dd5247;
+}
+
+.formtable {
+  display: table;
+}
+
+.formtable .row {
+  display: table-row;
+  margin-bottom: 20px;
+}
+
+.formtable .row .cell {
+  display: table-cell;
+  vertical-align: top;
+  width: 200px;
+}
+
+.formtable .row .cell .hint {
+  font-size: 10px;
+  display: block;
+}
+
+.formtable .row .cell .hint::before {
+  content: '(';
+}
+
+.formtable .row .cell .hint::after {
+  content: ')';
+}
+
+.padding {
+  padding-left: 20px;
+}

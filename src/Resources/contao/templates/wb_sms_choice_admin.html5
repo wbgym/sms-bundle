@@ -1,0 +1,98 @@
+<h2 class="sub_headline">Statistiken</h2>
+<div class="tl_tbox widget">
+    <?php foreach ($this->counts as $count => $c) { ?>
+		<?php
+			if($count == 'leadersWithFinalWish') {
+				echo "<b>ACHTUNG: Folgende Kursleiter sind gleichzeitig einem Kurs fest zugeteilt:<br /><pre>";
+				print_r($c);
+				echo "</pre></b>";
+			}
+			 if (strlen($GLOBALS['TL_LANG']['wb_sms_choice_admin'][$count][0]))
+				echo '<h3>' . $GLOBALS['TL_LANG']['wb_sms_choice_admin'][$count][0] . ': ' . $c . '</h3>';
+		?>
+            <?php
+            if (strlen($GLOBALS['TL_LANG']['wb_sms_choice_admin'][$count][1]))
+                echo '<p class="tl_help tl_tip">' . $GLOBALS['TL_LANG']['wb_sms_choice_admin'][$count][1] . '</p>';
+            ?>
+    <?php } ?>
+</div>
+
+<form action="<?= $this->route('contao_backend') ?>?do=sms_choice_admin" class="tl_form maintenance_inactive" method="post">
+    <h2 class="sub_headline">Aktionen</h2>
+
+    <input type="hidden" name="FORM_SUBMIT" value="wb_sms_choice_admin">
+    <input type="hidden" name="REQUEST_TOKEN" value="<?php echo REQUEST_TOKEN; ?>">
+    <br/>
+    <div class="tl_submit_container">
+        <input type="submit" name="removeInvalidWishes" class="tl_submit" value="<?php echo $GLOBALS['TL_LANG']['wb_sms_choice_admin']['deleteInvalidCourseChoices']; ?>">
+        <?php if (strlen($this->removedInvalidWishes)) { ?>
+            <p class="tl_message"><?php echo $this->removedInvalidWishes; ?></p>
+        <?php } ?>
+    </div>
+
+	<div class="tl_submit_container">
+        <input type="submit" name="deleteAutoEnrollments" class="tl_submit" value="<?php echo $GLOBALS['TL_LANG']['wb_sms_choice_admin']['deleteAutoEnrollments']; ?>">
+        <?php if (strlen($this->deleteAutoEnrollments)) { ?>
+            <p class="tl_message"><?php echo $this->deleteAutoEnrollments; ?></p>
+        <?php } ?>
+    </div>
+
+    <div class="tl_submit_container ">
+        <input type="submit" name="autoChoose" class="tl_submit" value="<?php echo $GLOBALS['TL_LANG']['wb_sms_choice_admin']['autoChoose']; ?>">
+        <?php if (is_array($this->autoChoose)) { ?>
+            <pre><?php print_r($this->autoChoose); ?></pre>
+        <?php } ?>
+    </div>
+
+    <div class="tl_submit_container ">
+        <input type="submit" name="writeFiles" class="tl_submit" value="<?php echo $GLOBALS['TL_LANG']['wb_sms_choice_admin']['writeFiles']; ?>">
+    </div>
+</form>
+
+<form action="<?= $this->route('contao_backend') ?>?do=sms_choice_admin" class="tl_form maintenance_inactive" method="post">
+    <h2 class="sub_headline">Manuelle Zuweisung</h2>
+
+    <input type="hidden" name="FORM_SUBMIT" value="wb_sms_choice_admin">
+    <input type="hidden" name="REQUEST_TOKEN" value="<?php echo REQUEST_TOKEN; ?>">
+    <div class="tl_formbody_edit">
+	<div class="tl_tbox nolegend">
+		<div class="w50">
+			<h3>Schüler</h3>
+			<select name="student" id="ctrl_student" class="tl_select tl_box tl_chosen">
+				<?php
+				foreach ($this->studentList as $id => $name)
+					echo '<option value="' . $id . '">' . $name . '</option>';
+				?>
+			</select>
+		</div>
+		<div class="w50">
+			<h3>Kurs</h3>
+			<select name="course" id="ctrl_course" class="tl_select tl_box tl_chosen">
+				<?php
+				if ($this->lastFinalCourse > 0) {
+					echo '<option value="' . $this->lastFinalCourse . '">' . $this->arrCourses[$this->lastFinalCourse]['name'] . '</option>';
+				}
+				?>
+				<option value="-1">-</option>
+				<?php
+				foreach ($this->arrCourses as $id => $course)
+					if ($id != $this->lastFinalCourse) {
+						echo '<option value="' . $id . '">' . $course['name'] . '</option>';
+					}
+				?>
+			</select>
+		</div>
+    </div>
+	</div>
+    <br/>
+    <div class="tl_submit_container ">
+        <input type="submit" name="setFinalWish" class="tl_submit" value="<?php echo $GLOBALS['TL_LANG']['wb_sms_choice_admin']['setFinalWish']; ?>">
+        <?php if (strlen($this->setFinalWish)) { ?>
+            <p class="tl_message"><?php echo $this->setFinalWish; ?></p>
+        <?php } ?>
+        <input type="submit" name="setFinalWishAuto" class="tl_submit" value="<?php echo $GLOBALS['TL_LANG']['wb_sms_choice_admin']['setFinalWishAuto']; ?>">
+        <?php if (strlen($this->setFinalWishAuto)) { ?>
+            <p class="tl_message"><?php echo $this->setFinalWishAuto; ?></p>
+        <?php } ?>
+    </div>
+</form>

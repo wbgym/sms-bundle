@@ -1,0 +1,234 @@
+<script src="bundles/wbgymsms/jquery.countdown.min.js"></script>
+<section class="<?php echo $this->class; ?> block"<?php echo $this->cssID; ?><?php if ($this->style): ?> style="<?php echo $this->style; ?>"<?php endif; ?>>
+<div class="header">
+<a class="show-courses inline cboxElement" data-lightbox="lbexchange" href="#course-list">Alle SmS-Kurse anzeigen</a>
+
+<div id="countdown">Die Tauschphase endet in <span class="time"></span></div>
+	<script type="text/javascript">
+		$("#countdown .time").countdown("2016/07/03 00:00:00", function(e) {
+			/*$(this).text(e.offset['days']*24+e.offset['hours'] + e.strftime(':%M:%S'));*/
+			$(this).text(e.strftime('%D Tagen %H:%M:%S'));
+		});
+	</script>
+</div>
+<!-- Show all Courses with description -->
+
+<script>
+$(document).ready(function(){
+		$('.show-courses').colorbox({
+			inline:true,
+			href:$(this).attr('href'),
+			onOpen: function() {
+				var id = $(this).attr('href');
+				$(id).toggleClass('invisible');
+			},
+			onCleanup: function () {
+				var id = $(this).attr('href');
+				$(id).toggleClass('invisible');
+			}
+		});
+});
+</script>
+<div id="course-list" class="invisible" style="line-height:1.5;padding:3%;">
+	<?php if($this->courses) : ?>
+		<?php foreach ($this->courses as $elem) : ?>
+			<div class="course" style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #f0f0f0;">
+				<h3><?php echo $elem['name']; ?></h3>
+				<p style="font-weight:bold;">Kursleiter: <?= $elem['leader_str'] ?><?php echo $elem['coLeader'] ? ', ' . $elem['coLeader_str'] : ''; ?>
+				<p><?php echo $elem['description']; ?><p>
+				<p style="font-style:italic;"><?php echo $elem['specials']; ?></p>
+				
+				<?php if($elem['inWishes']) : ?>
+					<p class="inWishes" style="color:#47A05B;">&#10133; <?php if($elem['ownInWish']) : ?>Du <?php if($elem['inWishes']-1) : ?>und <?php echo ($elem['inWishes']-1) ?> weitere Schüler möchte(n) <?php else : ?> möchtest <?php endif; ?> in diesen Kurs wechseln<?php else : ?><?php echo $elem['inWishes']; ?> Schüler möchten in diesen Kurs wechseln</p><?php endif; ?>
+				<?php endif; ?>
+				
+				<?php if($elem['outWishes']) : ?><p class="outWishes" style="color:#d04646;">&#10134; <?php echo $elem['outWishes'] ?> Schüler möchte(n) aus diesem Kurs wechseln</p><?php endif; ?>
+			</div>
+		<?php endforeach; ?>
+	<?php else : ?>
+		Keine Kurse für deine Klassenstufe vorhanden.
+	<?php endif; ?>
+</div>
+
+	<?php if($this->mode == 1) : ?>
+	
+	<!-- Mode: Searching ============================================ -->	
+	
+			<div id="information">
+				<h2>Allgemeine Informationen</h2>
+				<table class="table">
+					<tr>
+						<td>Name:</td>
+						<td>
+							<?php echo $this->name; ?> (<?php echo $this->grade; ?><?php if($this->formselector) : ?>/<?php echo $this->formselector; ?><?php endif; ?>)
+						</td>
+					</tr>
+					<?php if($this->currentcourse) : ?>
+						<tr>
+							<td>Aktueller Kurs:</td>
+							<td><?php echo $this->currentcourse; ?></td>
+						</tr>
+					<?php endif; ?>
+					<?php if($this->wishes) : ?>
+						<tr>
+							<td>Deine Tauschwünsche:</td>
+							<td>
+								<?php echo $this->wishes[1]['name'] . "<br />" . $this->wishes[2]['name'] . "<br />" . $this->wishes[3]['name']; ?>
+							</td>
+						</tr>
+					<?php endif; ?>
+				</table>
+			</div>
+	<?php if ($this->error) : ?><p class="error" style="color:#CE5454;"><?php echo $GLOBALS['TL_LANG']['SMS_EXCHANGE']['error_'.$this->error]; ?></p><?php endif; ?>
+	<form action="<?php ?>" method="POST">
+		<input type="hidden" name="FORM_SUBMIT" value="submit_wishes" />
+		<input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}" />	
+			
+			<div id="interface">
+				<h2>Tauschwünsche <?php if(!$this->wishes) : ?>eintragen<?php else : ?>ändern<?php endif; ?>:</h2>
+				<p><b>Hinweis:</b> Deine Wünsche werden gleich behandelt, die Reihenfolge ist also egal.</p>
+				<?php if($this->courses && !$this->myCourseIsFixed) : ?>
+					<table class="table">
+							<?php for ($i = 1; $i <= 3; $i++) : ?>
+								<tr>
+									<td><?php echo $i; ?>. Wunsch auswählen:</td>
+									<td>
+										<select name="wish<?php echo $i; ?>">
+											<?php foreach($this->courses as $index=>$val) : ?>
+												<option value="<?php echo $index; ?>" <?php if($this->wishes[$i]['id'] == $index) : ?>selected="selected"<?php endif; ?>><?php echo $val['name']; ?></option>
+											<?php endforeach; ?>
+										</select>
+									</td>
+								</tr>
+							<?php endfor; ?>
+						<tr>	
+							<td></td>
+							<td><input type="submit" value="<?php if(!$this->wishes) : ?>Suchen<?php else : ?>Aktualisieren<?php endif; ?>" /></td>
+						</tr>
+					</table>
+			</div>
+	</form>
+			<?php if($this->wishes) : ?><p><a href="<?php echo $this->href; ?>">Zu den Tauschangeboten</a></p><?php endif; ?>
+			<?php else : ?>
+				<?php if($this->myCourseIsFixed) : ?>
+					<p>Du kannst keine Tauschwünsche abgeben, weil du fest in einen Kurs eingetragen bist.</p>
+				<?php elseif (!$this->courses) : ?>
+					<p>Du kannst keine Tauschwünsche abgeben. Wahrscheinlich bist du Kursleiter oder darst nicht an der SmS-Woche teilnehmen.</p>
+				<?php endif; ?>
+			<?php endif; ?>
+<?php endif; ?>
+
+<?php if($this->mode == 2) : ?>
+
+<!-- Mode: Finding & Accepting ==================================================== -->
+		
+		<?php if ($this->message == 'cancelled') : ?>
+			<div class="cancelled">
+				<h2>Du hast den Kurstausch abgebrochen.</h2>
+				<p>Du kannst jetzt weiterhin nach einem Tauschpartner suchen. Hierzu kannst du natürlich auch deine Wünsche ändern.</p>
+			</div>
+		<?php endif; ?>
+
+		<?php if(empty($this->matches) && empty($this->freePlaceCourses)) : ?>
+			<?php if ($this->error) : ?><p class="error" style="color:#CE5454;"><?php echo $GLOBALS['TL_LANG']['SMS_EXCHANGE']['error_'.$this->error]; ?></p><?php endif; ?>
+			<div class="information">
+				<h2>Wir haben uns deine Wünsche gemerkt.</h2>
+				<p>
+					Leider gibt es zurzeit keinen Tauschpartner und keine freien Plätze für deine Wunschkurse.<br />
+					Sobald ein weiterer Schüler einen Änderungwunsch äußert, der zu deinem Tauschwunsch passt, wirst du per E-Mail benachrichtigt. 
+				</p>
+				<p><b>Bitte check regelmäßig die E-Mails deiner WBGym-Adresse: </b><a href="<?php echo $this->mailLink; ?>" target="_blank"><?php echo $this->email; ?></a></p>
+			</div>
+		<?php else : ?>
+			<?php if($this->freePlaceCourses && !$this->hasReactEntry) : ?>
+				<div class="free_places">
+					<h2>Freie Kursplätze gefunden!</h2>
+					<p>Es wurden freie Kursplätze für deine Wunschkurse gefunden.</p>
+					<p><b>Achtung:</b> Sobald du auf "Jetzt wechseln" klickst, kannst du deinen Kurs nicht mehr wechseln! Ein Kurswechsel kann nur einmalig durchgeführt werden!</p>
+					<table>
+						<tbody>
+						<?php foreach ($this->freePlaceCourses as $fpc) : ?>
+							<tr>
+								<form action="<?php ?>" method="POST">
+								
+									<input type="hidden" name="FORM_SUBMIT" value="execute_fpc" />
+									<input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}" />
+									<input type="hidden" name="course_id" value="<?php echo $fpc['id']; ?>" />
+								
+									<th class="course"><b><?php echo $fpc['name']; ?></b></th>
+									<td class="submit"><input type="submit" name="confirm" class="confirm" value="&#10004; Jetzt wechseln!" /></td>
+								</form>
+							</tr>
+						<?php endforeach; ?>
+						</tbody>
+					</table>
+				</div>
+			<?php endif; ?>
+			<?php if($this->matches) : ?>
+				<div class="matches">
+					<?php if($this->hasReactEntry) : ?>
+						<h2>Du hast einen reservierten Tauschwunsch!</h2>
+						<p>Ein Tauschpartner hat einen deiner Wunschkurse für dich reserviert. Bitte nimm das Angebot entweder an oder lehne es ab, weil dein Partner in der reservierten Zeit keine Veränderungen an seinen Tauschwünschen vornehmen kann.</p>
+					<?php else : ?>
+						<h2>Matches gefunden!</h2>
+						<p>Es wurden Tauschmöglichkeiten zu deinen Wünschen gefunden.</p>
+					<?php endif; ?>
+					<p><b>Achtung:</b> Sobald du auf "Jetzt tauschen" klickst, kannst du deinen Kurs nicht mehr wechseln! Ein Kurswechsel kann nur einmalig durchgeführt werden!</p>
+					<table>
+						<thead>
+							<tr>
+								<th>Kursname</th>
+								<th>Tauschpartner</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+						<?php foreach ($this->matches as $match) : ?>
+							<tr<?php if($match[0]['partner'] == $this->id) : ?> class="react_entry"<?php endif; ?>>
+								<form action="<?php ?>" method="POST">
+								
+									<input type="hidden" name="FORM_SUBMIT" value="execute_match" />
+									<input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}" />
+									<input type="hidden" name="course_id" value="<?php echo $match[0]['cCourseId']; ?>" />
+									<input type="hidden" name="wish_id" value="<?php echo $match[0]['id']; ?>" />
+									<input type="hidden" name="user_id" value="<?php echo $match[0]['studentId']; ?>" />
+								
+									<th class="course"><b><?php echo $match[0]['cCourseName']; ?></b></th>
+									<td class="student"><?php echo $match[0]['studentName']; ?></td>
+									<td class="submit"><?php if(!$this->hasReactEntry || $match[0]['partner'] == $this->id) : ?><input type="submit" name="confirm" class="confirm" value="&#10004; Jetzt tauschen!" /><?php endif; ?><?php if ($match[0]['partner'] == $this->id) : ?><input type="submit" name="cancel" class="cancel" value="&#10008; Tausch abbrechen" /><?php endif; ?></td>
+								</form>
+							</tr>
+						<?php endforeach; ?>
+						</tbody>
+					</table>
+				</div>
+			<?php endif; ?>
+		<?php endif; ?>
+	<p><?php if(!$this->hasReactEntry): ?><a href="<?php echo $this->href; ?>">Wünsche ändern</a><?php endif; ?></p>
+<?php endif; ?>
+
+<?php if($this->mode == 3) : ?>
+
+<!-- Mode: Successful ===================================================-->
+
+		<?php if ($this->message == 'success_part') : ?>
+			<h2>Du hast den Tausch zu "<?php echo $this->successData['new_course']; ?>" bestätigt.</h2>
+			<p>
+				Jetzt muss nur noch <b><?php echo $this->successData['partner_name']; ?></b> den Tausch bestätigen, damit der Tausch endgültig abgeschlossen ist. Dafür wurde er per E-Mail benachrichtigt. 
+				Wenn er den Tausch abbricht, musst du dir leider einen neuen Tauschpartner suchen.
+			</p>
+		<?php endif; ?>
+		<?php if ($this->message == 'success_full') : ?>
+			<h2>Du bist jetzt im Kurs "<?php echo $this->currentcourse; ?>".</h2>
+			<p>Der Tauschvorgang war erfolgreich!</p>
+			<p>Jetzt kannst du leider nicht mehr wechseln.</p>
+			<p>Wenn du weitere Fragen hast, wende dich bitte an das Webteam (<a href="mailto:sms@wbgym.de">sms@wbgym.de</a>). Wir helfen dir gern weiter!</p>
+		<?php endif; ?>
+		<?php if ($this->message == 'success_fpc') : ?>
+			<h2>Du bist jetzt im Kurs "<?php echo $this->currentcourse; ?>".</h2>
+			<p>Der Wechselvorgang war erfolgreich!</p>
+			<p>Jetzt kannst du leider nicht mehr wechseln.</p>
+			<p>Wenn du weitere Fragen hast, wende dich bitte an das Webteam (<a href="mailto:sms@wbgym.de">sms@wbgym.de</a>). Wir helfen dir gern weiter!</p>
+		<?php endif; ?>
+<?php endif; ?>
+</section>

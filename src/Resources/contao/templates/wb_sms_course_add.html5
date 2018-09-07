@@ -1,0 +1,161 @@
+<section class='<?= $this->class ?> block' id='SMSCourseAdd'>
+  <?php if ($this->formSuccess): ?>
+    <p><strong>Herzlichen Glückwunsch, du bist nun Kursleiter des Kurses "<?= $this->user_has_course['name'] ?>".</strong></p>
+  <?php elseif ($this->user_has_course !== false): ?>
+    <div class="info-anchor"></div>
+		<p>
+            <strong>Du bist als Kursleiter des Kurses "<?php echo $this->user_has_course['name']; ?>" eingetragen. Sollte dies falsch sein, wende dich bitte an das <a href="ansprechpartner/arbeitsgemeinschaften/webteam">Webteam</a> (<a href="mailto:webteam@wbgym.de">webteam@wbgym.de</a>).</strong>
+        </p>
+  <?php  else: ?>
+  <?php if (isset($this->errorMsg) && $this->errorMsg !== ''): ?>
+    <span class="error">Fehler: <?= $this->errorMsg ?></span>
+  <?php endif; ?>
+  <form action="" method="POST" class='formtable'>
+    <input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}" />
+    <div class="row">
+      <div class="cell"><strong><span class='label'>Kursname*</span></strong></div>
+      <div class='cell'>
+        <input type='text' name='course_name' min="4" placeholder='Kursname' value="<?= \Input::post('course_name') ?>" required />
+      </div>
+    </div>
+    <div class='row'>
+      <div class='cell'>
+        <strong><span class="label">Kursleiter</span></strong>
+      </div>
+      <div class="cell">
+        <?= $this->leaderString ?>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='cell'>
+        <strong><span class="label">Beschreibung*</span></strong>
+      </div>
+      <div class="cell">
+        <textarea name="description" rows="8" cols="80" minlength='20' placeholder="Wir werden 3 Tage lang nichts tun ;)" required><?= \Input::post('description') ?></textarea>
+      </div>
+    </div>
+    <div class='row'>
+      <div class="cell">
+        <strong><span class="label">2. Kursleiter</span></strong>
+      </div>
+      <div class='cell'>
+        <input type="checkbox" name='has_second_leader' id='has_second_leader' value='1' />
+      </div>
+    </div>
+    <div class='row second_leader_true hidden'>
+      <div class='cell padding'>
+        <span class="label"><strong>Klasse*</strong></span>
+      </div>
+      <div class="cell">
+        <select name='course' id='course'>
+              <?php foreach ($this->courses as $course): ?>
+                <option value='<?= str_replace(' ', '/', $course) ?>'>
+                  <?= $course ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+      </div>
+    </div>
+    <div class="row second_leader_true hidden">
+      <div class="cell padding">
+        <strong><span class='label'>Name*</span></strong>
+      </div>
+      <div class="cell">
+        <?php $first = true; foreach ($this->course_map as $key => $course) : ?>
+        <span class=" <?= !$first ? 'hidden' :'' ?> course" id="<?= $key ?>">
+            <select name="second_leader[<?= $key ?>]">
+                  <option selected value="">
+                    --
+                  </option>
+                  <?php foreach ($course as $id => $member): ?>
+                    <option value='<?= $id ?>'>
+                      <?= $member ?>
+                    </option>
+                  <?php endforeach; ?>
+                </select>
+          </span>
+        <?php $first = false; ?>
+        <?php endforeach;?>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='cell'>
+        <strong><span class="label">Betreuer*</span></strong>
+        <span class='hint'>Nur nach Absprache ausfüllen!</span>
+      </div>
+      <div class="cell">
+        <select name='teacher'>
+          <option selected value="">
+            --
+          </option>
+          <?php foreach ($this->teachers as $tid => $teacher): ?>
+            <option value='<?= $tid ?>'>
+              <?= $teacher ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='cell'>
+        <strong><span class="label">Teilnehmer*</span></strong>
+      </div>
+      <div class="cell">
+        <input type="number" name="numberOfstudents" required value="<?= \Input::post('numberOfstudents') ? \Input::post('numberOfstudents') : 20 ?>" , min="10" , max="30" />
+      </div>
+    </div>
+    <div class='row'>
+      <div class='cell'>
+        <strong><span class="label">Klassenstufen*</span></strong>
+      </div>
+      <div class="cell">
+        <label>von:</label><input type="number" name='minGrade' value='<?= \Input::post('minGrade') ? \Input::post('minGrade') : 5 ?>' min='5' max='10' required/>
+        <label>bis:</label><input type="number" name='maxGrade' value='<?= \Input::post('maxGrade') ? \Input::post('maxGrade') : 10 ?>' min='5' max='10' required/>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='cell'>
+        <strong><span class="label">Sachen die wir benötigen</span></strong>
+      </div>
+      <div class="cell">
+        <textarea name='needed' rows="8" cols="80" placeholder="Wir brauchen eine Armbrust, ein Stundenglas, drei Ziegen, einer von uns lernt Trompete spielen und der andere macht das hier, also ich kann das hier. (Fluch der Karibik - Fremde Gezeiten)">
+</textarea>
+      </div>
+    </div>
+    <div class='row'>
+      <div class='cell'>
+        <strong><span class="label">Notizen, Bemerkungen, <br />Sonstiges</span></strong>
+      </div>
+      <div class="cell">
+        <textarea name='notes' rows="8" cols="80" maxlength="255" placeholder="alles klar."></textarea>
+      </div>
+    </div>
+    <div class="row">
+      <div class="cell">
+        <!--spacer cell -->
+      </div>
+      <div class="cell">
+        <input type="submit" name='submit' value='Abschicken' />
+      </div>
+    </div>
+    </div>
+    <label>*Pflichtfelder</label>
+  </form>
+  <script>
+    function hideAllCourses() {
+      $('.course').hide();
+    }
+    $('#course').change(() => {
+      var val = $('#course').val();
+      hideAllCourses();
+      document.getElementById(val).style.display = 'block';
+    });
+    $('#has_second_leader').change(() => {
+      $('.second_leader_true').toggle();
+      hideAllCourses();
+      document.getElementById($('#course').val()).style.display = 'block';
+    });
+    $('.hidden').hide();
+  </script>
+  <?php endif; ?>
+</section>
