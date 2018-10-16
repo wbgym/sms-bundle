@@ -10,7 +10,15 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 
 [*.{php,twig,yml}]
-indent_style = tab
+indent_style = space
+indent_size = 4
 
 [*.{html5,svg,min.css,min.js}]
 insert_final_newline = false
+
+[*.{css,js,php}]
+indent_style = tab
+
+[*.html5]
+indent_style = space
+indent_size = 2
