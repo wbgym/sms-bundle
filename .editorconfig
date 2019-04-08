@@ -19,6 +19,6 @@ insert_final_newline = false
 [*.{css,js,php}]
 indent_style = tab
 
-[*.html5]
+[*.{html5,html}]
 indent_style = space
 indent_size = 2
