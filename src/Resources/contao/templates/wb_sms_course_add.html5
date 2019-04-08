@@ -1,6 +1,6 @@
 <section class='<?= $this->class ?> block' id='SMSCourseAdd'>
   <?php if ($this->formSuccess && is_null($this->user_course)): ?>
-    <p><strong>Herzlichen Glückwunsch, du bist nun Kursleiter des Kurses "<?= Input::post('name') ?>".</strong></p>
+    <p><strong>Herzlichen Glückwunsch, du bist nun Kursleiter des Kurses "<?= Input::post('course_name') ?>".</strong></p>
   <?php  elseif ($this->formSuccess): ?>
     <div class="info-anchor"></div>
     <p><strong>Änderungen am Kurs "<?= $this->user_course['name'] ?>" erfolgreich gespeichert.</strong>
