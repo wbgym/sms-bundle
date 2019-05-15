@@ -112,9 +112,9 @@ function sticky_relocate() {
 						<?php echo $course['description']; ?>
 					</p>
 
-					<?php if (strlen($course['specials'])) : ?>
-						<p class="course-specials"><?php echo $course['specials']; ?></p>
-					<?php endif; ?>
+					<?php /* if (strlen($course['specials'])) : ?>
+						<p class="course-specials"><?= $course['specials']; ?></p>
+					<?php endif; */ ?>
 					<?php if ($course['closed'] == 1) : ?>
 						<p class="course-specials">Geschlossener Kurs</p>
 					<?php endif; ?>
@@ -167,7 +167,7 @@ function sticky_relocate() {
          	var userWishesView = [-1,-1,-1];
 
          	//userWishesOld == wishes that are already saved in the db
-            var userWishesOld = [<?php echo implode(',', $this->arrUserWishes); ?>]
+            var userWishesOld = [<?php echo implode(',', $this->arrUserWishes ?? []); ?>]
 
             //userWishesNew == wish changes that are made before saving
             var userWishesNew = userWishesOld.slice();
@@ -221,7 +221,7 @@ function sticky_relocate() {
 	                if(userWishesOld.toString() != newWishes.toString()) {
 	                	$('#save_info').html('<span class="red">Ungespeicherte Änderungen vorhanden!</span>');
 	                }
-	             	else {
+                  else {
 	             		$('#save_info').empty();
 	             	}
 	            }

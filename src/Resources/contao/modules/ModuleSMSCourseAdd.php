@@ -105,7 +105,7 @@ class ModuleSMSCourseAdd extends \Module
 			'maxStudents' => Input::post('numberOfstudents'),
 			'minForm' => intval(Input::post('minGrade')) < 5 ? 5 : Input::post('minGrade'),
 			'maxForm' => intval(Input::post('maxGrade')) > 10 ? 10 : Input::post('maxGrade'),
-			'coLeader' => Input::post('has_second_leader') ? Input::post('second_leader')[Input::post('course')] : '0',
+			'coLeader' => Input::post('second_leader')[Input::post('course')] ?: '0',
 			'teacher' => Input::post('teacher') ?? '0'
 		];
 		return $input;
@@ -134,7 +134,10 @@ class ModuleSMSCourseAdd extends \Module
 		  # NOTE: shouldn't happend, you shouldn't be able to select yourself.
 			$error['second_leader'] = 'Du kannst dich nicht selber vertreten, wenn du allein bist, lass das Feld einfach frei.';
 		}
-		elseif (!is_numeric($course['coLeader']) && $course['coLeader'] != '0') {
+        elseif (intval($course['coLeader']) == 0 || $course['coLeader'] == "") {
+            $error['second_leader'] = 'Dein Kurs benötigt einen 2. Kursleiter.';
+        }
+		elseif (!is_numeric($course['coLeader'])) {
 			$error['second_leader'] = 'Fehler, konnte den 2. Kursleiter nicht zuordnen.';
 		}
 		elseif (!is_null($sndCourse) && $sndCourse['id'] !== $course['id'] && $first) {
@@ -301,7 +304,6 @@ class ModuleSMSCourseAdd extends \Module
 			$objMail->from = 'webteam@wbgym.de';
 			$objMail->fromName = 'SmS-Woche / Webteam Weinberg-Gymnasium';
 			$objMail->subject = $strSubject;
-			\dump(getcwd());
 			$html = file_get_contents('../vendor/wbgym/sms-bundle/src/Resources/contao/templates_email/' . $strTemplate, true);
 			/*
 			* Replace own insert tags

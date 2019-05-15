@@ -50,19 +50,18 @@
     </div>
     <div class='row'>
       <div class="cell">
-        <strong><span class="label">2. Kursleiter</span></strong>
+        <strong><span class="label">2. Kursleiter*</span></strong>
       </div>
       <?php if (is_null($this->user_course)): ?>
           <div class='cell'>
               <?php if (isset($this->error["second_leader"])): ?>
                    <span class='error' ><?= $this->error["second_leader"]?></span><br />
               <?php endif; ?>
-            <input type="checkbox" name='has_second_leader' id='has_second_leader' value='1'/>
           </div>
         </div>
-        <div class='row second_leader_true hidden'>
+        <div class='row'>
           <div class='cell padding'>
-            <span class="label"><strong>Klasse*</strong></span>
+            <span class="label"><strong>Klasse</strong></span>
           </div>
           <div class="cell">
             <select name='course' id='course'>
@@ -74,15 +73,15 @@
                 </select>
           </div>
         </div>
-        <div class="row second_leader_true hidden">
+        <div class="row">
           <div class="cell padding">
-            <strong><span class='label'>Name*</span></strong>
+            <strong><span class='label'>Name</span></strong>
           </div>
           <div class="cell">
             <?php $first = true; foreach ($this->course_map as $key => $course) : ?>
-            <span class=" <?= !$first ? 'hidden' :'' ?> course" id="<?= $key ?>">
+            <span class=" <?= (!$first && !$this->user_course['coLeader'] == $key) ? 'hidden' :'' ?> course" id="<?= $key ?>">
                 <select name="second_leader[<?= $key ?>]">
-                      <option selected value="">
+                      <option selected value="<?= Input::post('second_leader')[$key] ?? '' ?>">
                         --
                       </option>
                       <?php foreach ($course as $id => $member): ?>
@@ -177,11 +176,6 @@
       let val = $('#course').val();
       hideAllCourses();
       document.getElementById(val).style.display = 'block';
-    });
-    $('#has_second_leader').change(() => {
-      $('.second_leader_true').toggle();
-      hideAllCourses();
-      document.getElementById($('#course').val()).style.display = 'block';
     });
     $('.hidden').hide();
   </script>
