@@ -451,6 +451,7 @@ class ModuleSMSChoiceAdmin extends \BackendModule {
 
         $objFile = new \File('files/schuelervertretung/sms/courses.csv');
         $objFile->write($strData);
+        $objFile->close();
     }
 
     protected function writeStudentFile($withWishes) {
@@ -498,6 +499,7 @@ class ModuleSMSChoiceAdmin extends \BackendModule {
             $objFile = new \File('files/schuelervertretung/sms/students.csv');
         }
         $objFile->write($strData);
+        $objFile->close();
     }
 
     protected function writeTeacherFile() {
@@ -535,6 +537,7 @@ class ModuleSMSChoiceAdmin extends \BackendModule {
 
         $objFile = new \File('files/schuelervertretung/sms/teachers.csv');
         $objFile->write($strData);
+        $objFile->close();
     }
 
     protected function courseIdFromTeacher($teacherId) {
