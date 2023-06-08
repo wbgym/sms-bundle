@@ -98,6 +98,7 @@
         <?php elseif (is_numeric($this->user_course['coLeader'])): ?>
                 <div class="cell">
                     <?= $this->user_course['coLeader'] != '0' ? WBGym\WBGym::student($this->user_course['coLeader']) : '--' ?>
+                    <input type="hidden" name="second_leader" value="<?= $this->user_course['coLeader'] ?>" />
                 </div>
             </div>
         <?php endif; ?>
